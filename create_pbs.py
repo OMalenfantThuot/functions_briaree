@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 #Informations entrees par l'utilisateur
 jobname  =   input('Enter job name:\n')
 walltime =   input("Enter job length (in hours):\n")+":00:00"
@@ -13,7 +15,7 @@ while 1:
     else:
         print('This executable is not recognized.')
 
-
+#Ecriture du fichier
 f = open('pbs','w')
 f.write("#!/bin/bash\n")
 f.write("#PBS -S /bin/bash\n\n")
