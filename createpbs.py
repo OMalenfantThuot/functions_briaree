@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 #Informations entrees par l'utilisateur
 jobname  =   input('Enter job name:\n')
