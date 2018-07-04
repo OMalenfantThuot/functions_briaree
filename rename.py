@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Script pour renommer les fichiers posinpX.in.ascii
 # a posinpX.ascii pour les calculs NEB
