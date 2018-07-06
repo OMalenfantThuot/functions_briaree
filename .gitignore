@@ -2,5 +2,6 @@ automake*
 aclocal*
 *.pyc
 __pycache__/
-/dist/
-/*.egg-info
+dist/
+*.egg-info/
+build/
