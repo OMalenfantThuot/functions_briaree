@@ -1,6 +1,5 @@
 #Fonction pour créer des fichiers de soumission pbs en série
-
-def createpbs(jobname='jobname',walltime='1', nodes='4', executable='bigdft'):
+def createpbs(jobname='jobname',walltime=1, nodes=4, executable='bigdft'):
 
 #-----------------------------------------------------------------------#
 #jobname:   Nom de la job
@@ -14,6 +13,15 @@ def createpbs(jobname='jobname',walltime='1', nodes='4', executable='bigdft'):
         executable = 'bigdft'
     elif executable.casefold() in ['n','neb']:
         executable = 'neb'
+
+    #Conversion en string du walltime
+    hours = int(walltime)
+    minutes = int((walltime - hours) * 60)
+    seconds = int((walltime - hours - minutes/60) * 3600)
+    walltime = '{:02d}'.format(hours) + ':' + '{:02d}'.format(minutes) + ':' + '{:02d}'.format(seconds)
+
+    #Conversion en string des nodes
+    nodes = str(int(nodes))
 
     #Écriture du fichier
     f = open('pbs','w')
