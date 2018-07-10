@@ -12,7 +12,7 @@ import re
 
 old_files = os.listdir(os.getcwd())
 
-jobname = str(Path().resolve()).split('/')[-1]
+jobname = str(Path().resolve()).split('/')[-1].split('_restart')[0]
 new_path = fbr.createFolder('../'+jobname+'_restart',increment=True)
 
 for file in old_files:
