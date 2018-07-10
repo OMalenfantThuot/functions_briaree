@@ -10,7 +10,7 @@ import os
 
 def createFolder(new_path,increment=False):
     if increment:
-        i = 0
+        i = 1
         test_path = new_path
         while os.path.exists(test_path):
             i += 1
