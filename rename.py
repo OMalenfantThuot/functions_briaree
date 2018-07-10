@@ -2,7 +2,7 @@
 
 # Script pour renommer les fichiers posinpX.in.ascii
 # a posinpX.ascii pour les calculs NEB
-# Peut s'appeler comme un executable avec un alias
+# Peut s'appeler comme un executable
 
 import os
 
