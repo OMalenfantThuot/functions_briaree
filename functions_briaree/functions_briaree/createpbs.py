@@ -25,22 +25,26 @@ def createpbs(jobname='jobname',walltime=1, nodes=4, executable='bigdft'):
 
     #Écriture du fichier
     f = open('pbs','w')
-    f.write("#!/bin/bash\n")
-    f.write("#PBS -S /bin/bash\n\n")
     
-    f.write("#PBS -N " + jobname + "\n")
-    f.write("#PBS -l walltime=" + walltime + "\n")
-    f.write("#PBS -l nodes=" + nodes + ":ppn=12\n\n")
+    text = ("#!/bin/bash\n"
+            "#PBS -S /bin/bash\n\n"
     
-    f.write("cd $PBS_O_WORKDIR\n")
-    f.write("echo 'Current working directory is `pwd`'\n")
-    f.write("echo 'Running on `hostname`'\n")
-    f.write("echo 'Starting run at: `date`'\n\n")
+            "#PBS -N " + jobname + "\n"
+            "#PBS -l walltime=" + walltime + "\n"
+            "#PBS -l nodes=" + nodes + ":ppn=12\n\n"
 
-    f.write("module load MPI/Gnu/gcc4.9.2/openmpi/1.10.2\n")
-    f.write("export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/RQexec/olimt/bigDFT_install/github_dir/master/build/install/lib\n\n")
+            "cd $PBS_O_WORKDIR\n"
+            "echo 'Current working directory is `pwd`'\n"
+            "echo 'Running on `hostname`'\n"
+            "echo 'Starting run at: `date`'\n\n"
+            
+            "module load MPI/Gnu/gcc4.9.2/openmpi/1.10.2\n"
+            "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/RQexec/olimt/bigDFT_install/github_dir/master/build/install/lib\n\n")
+    
+    f.write(text)
     
     if executable == 'bigdft':
-        f.write("mpirun /RQexec/olimt/bigDFT_install/github_dir/master/build/install/bin/bigdft")
+        f.write("mpiexec /RQexec/olimt/bigDFT_install/github_dir/master/build/install/bin/bigdft")
     elif executable == 'neb':
-        f.write("mpirun /RQexec/olimt/bigDFT_install/github_dir/master/build/install/bin/NEB<input.yaml> output.yaml")
+        f.write("mpiexec /RQexec/olimt/bigDFT_install/github_dir/master/build/install/bin/NEB<input.yaml> output.yaml")
+    f.close()
