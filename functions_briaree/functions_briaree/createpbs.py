@@ -24,27 +24,26 @@ def createpbs(jobname='jobname',walltime=1, nodes=4, executable='bigdft'):
     nodes = str(int(nodes))
 
     #Écriture du fichier
-    f = open('pbs','w')
+    with open('pbs','w') as f:
     
-    text = ("#!/bin/bash\n"
-            "#PBS -S /bin/bash\n\n"
+        text = ("#!/bin/bash\n"
+                "#PBS -S /bin/bash\n\n"
+        
+                "#PBS -N " + jobname + "\n"
+                "#PBS -l walltime=" + walltime + "\n"
+                "#PBS -l nodes=" + nodes + ":ppn=12\n\n"
     
-            "#PBS -N " + jobname + "\n"
-            "#PBS -l walltime=" + walltime + "\n"
-            "#PBS -l nodes=" + nodes + ":ppn=12\n\n"
-
-            "cd $PBS_O_WORKDIR\n"
-            "echo 'Current working directory is `pwd`'\n"
-            "echo 'Running on `hostname`'\n"
-            "echo 'Starting run at: `date`'\n\n"
-            
-            "module load MPI/Gnu/gcc4.9.2/openmpi/1.10.2\n"
-            "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/RQexec/olimt/bigDFT_install/github_dir/master/build/install/lib\n\n")
-    
-    f.write(text)
-    
-    if executable == 'bigdft':
-        f.write("mpiexec /RQexec/olimt/bigDFT_install/github_dir/master/build/install/bin/bigdft")
-    elif executable == 'neb':
-        f.write("mpiexec /RQexec/olimt/bigDFT_install/github_dir/master/build/install/bin/NEB<input.yaml> output.yaml")
-    f.close()
+                "cd $PBS_O_WORKDIR\n"
+                "echo 'Current working directory is `pwd`'\n"
+                "echo 'Running on `hostname`'\n"
+                "echo 'Starting run at: `date`'\n\n"
+                
+                "module load MPI/Gnu/gcc4.9.2/openmpi/1.10.2\n"
+                "export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/RQexec/olimt/bigDFT_install/github_dir/master/build/install/lib\n\n")
+        
+        f.write(text)
+        
+        if executable == 'bigdft':
+            f.write("mpiexec /RQexec/olimt/bigDFT_install/github_dir/master/build/install/bin/bigdft")
+        elif executable == 'neb':
+            f.write("mpiexec /RQexec/olimt/bigDFT_install/github_dir/master/build/install/bin/NEB<input.yaml> output.yaml")
