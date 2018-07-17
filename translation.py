@@ -3,11 +3,11 @@
 
 #Script pour translater les fichiers positions .ascii
 import numpy as np
-import io_bigdft as io
+import functions_briaree as fbr
 
 infile = str(input('Entrer le nom du fichier à translater:\n'))
 outfile = 'out_'+infile
-data_pos, data_at = io.read_ascii(infile)
+data_pos, data_at = fbr.read_ascii(infile)
 
 delx = float(input('Translation en x (unités atomiques):\n'))
 delz = float(input('Translation en z (unités atomiques):\n'))
