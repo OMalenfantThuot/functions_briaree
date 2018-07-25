@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 #----------------------------------------------------------#
-#Version executable de la fonctione pbs.create()
+#Version executable de la fonction pbs.create()
 #----------------------------------------------------------#
 
 
