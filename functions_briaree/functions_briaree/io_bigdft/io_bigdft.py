@@ -6,11 +6,12 @@ import matplotlib.pyplot as plt
 def read_ascii(filename):
 #Fonction pour lire les fichiers positions .ascii de BigDFT
 #data_pos: contient les positions des atomes
-#data_at: contient les types atomiques
+#data_element: contient les types atomiques
 
     data_pos = []
-    data_at = []
+    data_element = []
     data_spin = []
+    cell_dims = []
     coord = 'absolute'
 
     with open(filename,'r') as f:
@@ -18,13 +19,18 @@ def read_ascii(filename):
         for line in f:
             l = line.split()
 
-            if (not line[0] == '#') and (len(l) > 3):
-                data_pos.append([float(l[0]),float(l[1]),float(l[2])])
-                data_at.append(l[3])
-                if len(l) == 4:
-                    data_spin.append(0)
-                elif len(l) == 6:
-                    data_spin.append(int(l[5][0]))
+            if (not line[0] == '#'):
+                if (len(l) >= 4):
+                    data_pos.append([float(l[0]),float(l[1]),float(l[2])])
+                    data_element.append(l[3])
+                    if len(l) == 4:
+                        data_spin.append(0)
+                    elif len(l) == 6:
+                        data_spin.append(int(l[5][0]))
+                    else:
+                        raise Exception('A line is not recognized:\n'+line)
+                elif len(l) == 3:
+                    cell_dims.append(l)
                 else:
                     raise Exception('A line is not recognized:\n'+line)
 
@@ -38,7 +44,7 @@ def read_ascii(filename):
                 else:
                     raise Exception('Keyword not recognized')
 
-    return data_pos,data_at,data_spin,units,geocode,coord
+    return data_pos,data_element,data_spin,units,geocode,coord,cell_dims
             
     
     

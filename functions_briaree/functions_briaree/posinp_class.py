@@ -22,7 +22,7 @@ class posinp:
 
         if self.filetype == 'ascii':
             self.atompos, self.elements, self.spins,self.units, \
-                self.geocode, self.coord = read_ascii(infile)
+                self.geocode, self.coord,self.cell_dims = read_ascii(infile)
             self.nat = len(self.elements)
 
         elif self.filetype == 'xyz':
@@ -30,3 +30,26 @@ class posinp:
 
         else:
             raise Exception('format not recognized')
+
+#    def translate(self, delx, delz):
+
+    def add_atom(self,new_coord,new_element,new_spin=0):
+        #coord : list with the new coordinates
+
+        self.atompos.append(new_coord)
+        self.elements.append(new_element)
+        self.spins.append(new_spin)
+        self.nat += 1
+        
+
+    def remove_atom(self,coord):
+        #coord: rank of the atom to be removed
+
+        del self.atompos[coord]
+        del self.elements[coord]
+        del self.spins[coord]
+        self.nat -= 1
+
+#    def create(self):
+
+#    def enlarge(self, initsize, finalsize):
