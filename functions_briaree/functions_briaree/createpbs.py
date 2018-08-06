@@ -1,13 +1,12 @@
 #Fonction pour créer des fichiers de soumission pbs en série
 def createpbs(jobname='jobname',walltime=1, nodes=4, executable='bigdft'):
+    """
 
-#-----------------------------------------------------------------------#
-#jobname:   Nom de la job
-#walltime:  Temps demandé pour le calcul (en heures)
-#nodes:     Nombre de noeuds demandés pour le calcul
-#executable:    executable demandé(bigdft ou neb)
-#-----------------------------------------------------------------------#
-
+    :param jobname: nom de la job dans le système de soumission
+    :param walltime: temps de calcul demandé en heures
+    :param nodes: nombre de noeuds de calcul demandé
+    :param executable: bigdft ou neb
+    """
     #Détermination de l'éxécutable
     if executable.casefold() in ['b','bigdft']:
         executable = 'bigdft'

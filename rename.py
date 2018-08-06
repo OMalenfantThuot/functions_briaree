@@ -1,8 +1,9 @@
-#!/usr/bin/env python3
-
-# Script pour renommer les fichiers posinpX.in.ascii
-# a posinpX.ascii pour les calculs NEB
-# Peut s'appeler comme un executable
+#!/usr/bin/env python
+"""
+Script pour renommer les fichiers posinpX.in.ascii
+a posinpX.ascii pour les calculs NEB
+Peut s'appeler comme un éxécutable
+"""
 
 import os
 

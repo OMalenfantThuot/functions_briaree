@@ -1,12 +1,16 @@
 
-class psppar:
-
+class Psppar:
+    """Une classe pour les fichiers pseudopotentiels"""
     def __init__(self,element):
+        """
+        :param element: élément de l'atome représenté par le pseudo
+        """
         self.element = element.upper()
         if self.element not in ['C','N']:
             raise NameError('This element is not supported yet.')
 
     def create(self):
+        """crée le fichier pseudopotential"""
 
         with open('psppar.' + self.element, 'w') as f:
 

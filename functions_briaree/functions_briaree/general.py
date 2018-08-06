@@ -1,14 +1,14 @@
-#---------------------------------------------------------------------------#
-# Fonctions générales pour le  reste du package
-#---------------------------------------------------------------------------#
-
+"""
+Fonctions générales pour le  reste du package
+"""
 import os
 
 #createFolder : crée un Folder à new_path
 #Increment détermine si une incrémentation doit être ajouté dans le cas
 #ou new_path existe déjà
 
-def createFolder(new_path,increment=False):
+def create_folder(new_path,increment=False):
+
     if increment:
         i = 1
         test_path = new_path

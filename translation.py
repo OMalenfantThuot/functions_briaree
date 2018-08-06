@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
-#Script pour translater les fichiers positions .ascii
+"""
+Script pour translater les fichiers positions .ascii
+S'appelle comme un éxécutable
+"""
 import numpy as np
 import functions_briaree as fbr
 

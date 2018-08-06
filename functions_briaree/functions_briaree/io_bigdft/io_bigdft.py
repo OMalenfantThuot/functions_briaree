@@ -4,9 +4,12 @@ import matplotlib.pyplot as plt
 
 
 def read_ascii(filename):
-#Fonction pour lire les fichiers positions .ascii de BigDFT
-#data_pos: contient les positions des atomes
-#data_element: contient les types atomiques
+    """
+    Fonction pour lire les fichiers positions .ascii de BigDFT
+    :param filename: nom du fichier à lire
+    :return: positions atomiques, éléments, spin, unités
+    :return: geocode, type de coordonnées, dimensions de la cellule
+    """
 
     data_pos = []
     data_element = []
