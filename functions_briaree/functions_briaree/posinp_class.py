@@ -1,4 +1,5 @@
 from .io_bigdft import read_ascii
+import os
 
 class Posinp:
     """
@@ -59,8 +60,34 @@ class Posinp:
         del self.spins[rank]
         self.nat -= 1
 
-    def create(self):
-        pass
+    def create_file(self,outfile,increment='True'):
+        """
+        Crée un fichier position avec les valeurs dans self
+        :param outfile: nom du fichier à créer sans l'extension
+        :param increment: détermine si le nom du fichier doit être incrémenté
+        """
+        if increment and os.path.exists(outfile):
+            i = 2
+            testname = outfile + str(i) + '.' + self.filetype
+            while os.path.exists(testname):
+                i += 1
+                testname = outfile + str(i) + '.' + self.filetype
+            outfile = testname
+        else:
+            outfile = outfile + '.' + self.filetype
+
+        with open(outfile,'w') as f:
+            f.write('# BigDFT position file\n')
+            f.write(' ' + ' '.join(self.cell_dims[0]) + '\n')
+            f.write(' ' + ' '.join(self.cell_dims[1]) + '\n')
+            f.write('#keyword: ' + self.units + '\n')
+            f.write('#keyword: ' + self.geocode + '\n')
+            if self.coord == 'reduced':
+                f.write('#keyword: ' + self.coord + '\n')
+
+
+
+
 
     def enlarge(self, initsize, finalsize):
         pass
