@@ -1,5 +1,6 @@
 from .io_bigdft import read_ascii
 import os
+import numpy as np
 
 class Posinp:
     """
@@ -92,5 +93,61 @@ class Posinp:
                     f.write(' {IGSpin: ' + str(self.spins[line]) + '}')
                 f.write('\n')
 
-    def enlarge(self, initsize, finalsize):
+    def generate_graphene(self, xsize, zsize, units = None):
+        """
+        Génère les variables relatives à une cellule de graphène parfait
+        :param xsize: nombre de cellules primitives dans la direction x
+        :param zsize: nombre de cellules primitives dans la direction z
+        :param units: unités (optionel si déjà définis)
+        """
+        self.geocode = 'surface'
+        self.cell_dims = [[0] * 3] * 2
+        if units:
+            self.units = units
+        else:
+            raise NameError('Units are not defined.')
+        if self.units in ['atomicd0','atomic','bohr','bohrd0']:
+            basex = 4.6627
+            basez = 8.0762
+            self.cell_dims[0] = ['{:19.17E}'.format(xsize*basex), '{:19.17E}'.format(0), '{:19.17E}'.format(40)]
+            self.cell_dims[1] = ['{:19.17E}'.format(0), '{:19.17E}'.format(0), '{:19.17E}'.format(zsize*basez)]
+        elif self.units in ['angstroem', 'angstroemd0']:
+            basex = 2.4673
+            basez = 4.2737
+            self.cell_dims[0] = ['{:19.17E}'.format(xsize * basex), '{:19.17E}'.format(0), '{:19.17E}'.format(40)]
+            self.cell_dims[1] = ['{:19.17E}'.format(0), '{:19.17E}'.format(0), '{:19.17E}'.format(zsize * basez)]
+        else:
+            raise NameError('Units not recognized.')
+        self.generate_graphene_positions(xsize,zsize)
+        self.elements = ['C']*self.nat
+        self.spins = [0]*self.nat
+
+    def generate_graphene_positions(self,xsize,zsize):
+        """
+        génère les positions pour le graphène parfait
+        :param xsize: nombre de cellules primitives dans la direction x
+        :param zsize: nombre de cellules primitives dans la direction z
+        """
+        self.nat = 4*xsize*zsize
+        x_reduced_pos = []
+        z_reduced_pos = []
+        for zi in range(zsize):
+            for xi in range(xsize):
+                x_reduced_pos.append( float(xi) / xsize)
+                z_reduced_pos.append( float(zi) / zsize)
+            for xi in range(xsize):
+                x_reduced_pos.append( float(xi)/xsize)
+                z_reduced_pos.append( (float(zi) + (1./3)) / zsize)
+            for xi in range(xsize):
+                x_reduced_pos.append( (float(xi) + (1./2)) / xsize)
+                z_reduced_pos.append( (float(zi) + (1./2)) / zsize)
+            for xi in range(xsize):
+                x_reduced_pos.append( (float(xi) + (1./2)) / xsize)
+                z_reduced_pos.append( (float(zi) + (5./6)) / zsize)
+        x_pos = np.array(x_reduced_pos) * float(self.cell_dims[0][0])
+        z_pos = np.array(z_reduced_pos) * float(self.cell_dims[1][2])
+        for at in range(self.nat):
+            self.atompos.append([x_pos[at],20.,z_pos[at]])
+
+    def enlarge_graphene_cell(self, initsize, finalsize):
         pass
