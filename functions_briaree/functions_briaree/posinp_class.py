@@ -36,8 +36,17 @@ class Posinp:
         else:
             raise Exception('Format not recognized')
 
-    def translate(self, delx, delz):
-        pass
+    def translate(self, del_x, del_y, del_z):
+        """
+        Translation des positions atomiques
+        :param del_x: translation en x
+        :param del_y: translation en y
+        :param del_z: translation en z
+        """
+        for atom in self.atompos:
+            atom[0] += del_x
+            atom[1] += del_y
+            atom[2] += del_z
 
     def add_atom(self,new_coord,new_element,new_spin=0):
         """
