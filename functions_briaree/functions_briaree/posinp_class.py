@@ -70,7 +70,7 @@ class Posinp:
         del self.spins[rank]
         self.nat -= 1
 
-    def create_file(self,outfile,increment='True'):
+    def create_file(self,outfile,increment='False'):
         """
         Crée un fichier position avec les valeurs dans self
         :param outfile: nom du fichier à créer sans l'extension
@@ -111,10 +111,20 @@ class Posinp:
         """
         self.geocode = 'surface'
         self.cell_dims = [[0] * 3] * 2
+        self.elements = []
+        self.spins = []
         if units:
             self.units = units
+        elif self.units:
+            pass
         else:
             raise NameError('Units are not defined.')
+        self.generate_graphene_cell_dims(xsize,zsize)
+        self.atompos = self.generate_graphene_positions(xsize,zsize)
+        self.elements = ['C']*self.nat
+        self.spins = [0]*self.nat
+
+    def generate_graphene_cell_dims(self,xsize,zsize):
         if self.units in ['atomicd0','atomic','bohr','bohrd0']:
             basex = 4.6627
             basez = 8.0762
@@ -127,9 +137,6 @@ class Posinp:
             self.cell_dims[1] = ['{:19.17E}'.format(0), '{:19.17E}'.format(0), '{:19.17E}'.format(zsize * basez)]
         else:
             raise NameError('Units not recognized.')
-        self.generate_graphene_positions(xsize,zsize)
-        self.elements = ['C']*self.nat
-        self.spins = [0]*self.nat
 
     def generate_graphene_positions(self,xsize,zsize):
         """
@@ -155,8 +162,42 @@ class Posinp:
                 z_reduced_pos.append( (float(zi) + (5./6)) / zsize)
         x_pos = np.array(x_reduced_pos) * float(self.cell_dims[0][0])
         z_pos = np.array(z_reduced_pos) * float(self.cell_dims[1][2])
+        atompos = []
         for at in range(self.nat):
-            self.atompos.append([x_pos[at],20.,z_pos[at]])
+            atompos.append([x_pos[at],20.,z_pos[at]])
+        return atompos
 
-    def enlarge_graphene_cell(self, initsize, finalsize):
-        pass
+    def enlarge_graphene_cell(self, finalsize):
+        if not (isinstance(finalsize[0],int) and isinstance(finalsize[1],int)):
+           raise TypeError('Cell sizes should be integers (in primitive cell units).')
+        initsize = self.determine_graphene_size()
+        if not (finalsize[0] >= initsize[0] and finalsize[1] >= initsize[1]):
+            raise ValueError('Final size must be larger than initial size.')
+        self.translate(-self.atompos[0][0],0,-self.atompos[0][2])       #<--- à corriger pour mettre les atomes au milieu
+        self.generate_graphene_cell_dims(finalsize[0],finalsize[1])
+        deltax_right = int( np.floor( (finalsize[0] - initsize[0] ) / 2))
+        deltax_left  = int( np.ceil ( (finalsize[0] - initsize[0] ) / 2))
+        deltaz_up    = int( np.floor( (finalsize[1] - initsize[1] ) / 2))
+        deltaz_down  = int( np.ceil ( (finalsize[1] - initsize[1] ) / 2))
+        new_positions = self.generate_graphene_positions(finalsize[0],finalsize[1])
+        reference_array = np.around(np.array(self.atompos),2)
+        print(reference_array)
+        compteur = 0
+        for position in new_positions:
+            print(np.around(position,2))
+            if not(np.around(position,2) in reference_array): #marche pas pour l'instant
+                self.atompos.append(position)
+            else:
+                compteur += 1
+        print(compteur)
+
+    def determine_graphene_size(self):
+        if self.units in ['atomicd0','atomic','bohr','bohrd0']:
+            x_size = int(round(float(self.cell_dims[0][0])/4.6627))
+            z_size = int(round(float(self.cell_dims[1][2])/8.0762))
+        elif self.units in ['angstroem','angstroemd0']:
+            x_size = int(round(float(self.cell_dims[0][0])/2.4673))
+            z_size = int(round(float(self.cell_dims[1][2])/8.0762))
+        else:
+            raise NameError('Units not recognized.')
+        return [x_size,z_size]
