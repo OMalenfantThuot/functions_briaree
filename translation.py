@@ -1,36 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
+import functions_briaree as fbr
+
 """
 Script pour translater les fichiers positions .ascii
 S'appelle comme un éxécutable
+
 """
-import numpy as np
-import functions_briaree as fbr
-
 infile = str(input('Entrer le nom du fichier à translater:\n'))
-outfile = 'out_'+infile
-data_pos, data_at = fbr.read_ascii(infile)
 
-delx = float(input('Translation en x (unités atomiques):\n'))
-delz = float(input('Translation en z (unités atomiques):\n'))
+Pos = fbr.Posinp()
+Pos.def_from_file(infile)
+outfile = 'out_'+infile.strip('.' + Pos.filetype)
 
-data_pos[:,0] += delx
-data_pos[:,2] += delz
+delx = float(input('Translation en x (' + Pos.units + '):\n'))
+delz = float(input('Translation en z (' + Pos.units + '):\n'))
 
-with open(infile,'r') as f:
-    with open(outfile,'w') as g:
-        g.write(f.readline())
-        cell = f.readline()+f.readline()
-        g.write(cell)
-        cell = np.array(cell.split())
-        while 1:
-            line = f.readline()
-            if line[0] == '#':
-                g.write(line)
-                continue
-            else:
-                break
-        
-        Nat = len(data_at)
-        for i in range(Nat):
-            g.write('%18.15f'%(data_pos[i,0])+"\t"+'%18.15f'%(data_pos[i,1])+"\t"+'%18.15f'%(data_pos[i,2])+"\t"+str(data_at[i])+"\n")
+Pos.translate(delx,0,delz)
+Pos.create_file(outfile,increment='True')
