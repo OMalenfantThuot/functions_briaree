@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Version éxécutable de la méthode pbs.create()
+Version éxécutable de la fonction createpbs()
 """
 
 # Informations entrees par l'utilisateur
