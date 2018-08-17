@@ -168,28 +168,39 @@ class Posinp:
         return atompos
 
     def enlarge_graphene_cell(self, finalsize):
+        """
+        méthode pour agrandir les cellules de graphène à partir d'une cellule plus petite
+        :param finalsize: liste, taille en unités de cellules primitives [x,z]
+        """
         if not (isinstance(finalsize[0],int) and isinstance(finalsize[1],int)):
            raise TypeError('Cell sizes should be integers (in primitive cell units).')
+        if self.coord == 'reduced':
+            raise ValueError('Reduced coordinates are not implemented.')#
         initsize = self.determine_graphene_size()
         if not (finalsize[0] >= initsize[0] and finalsize[1] >= initsize[1]):
             raise ValueError('Final size must be larger than initial size.')
-        self.translate(-self.atompos[0][0],0,-self.atompos[0][2])       #<--- à corriger pour mettre les atomes au milieu
-        self.generate_graphene_cell_dims(finalsize[0],finalsize[1])
-        deltax_right = int( np.floor( (finalsize[0] - initsize[0] ) / 2))
-        deltax_left  = int( np.ceil ( (finalsize[0] - initsize[0] ) / 2))
-        deltaz_up    = int( np.floor( (finalsize[1] - initsize[1] ) / 2))
-        deltaz_down  = int( np.ceil ( (finalsize[1] - initsize[1] ) / 2))
+
+        deltax_down = int( np.ceil ( (finalsize[0] - initsize[0] ) / 2))
+        deltax_up   = int( np.floor( (finalsize[0] - initsize[0] ) / 2))
+        deltaz_left = int( np.ceil ( (finalsize[1] - initsize[1] ) / 2))
+        deltaz_right= int( np.floor( (finalsize[1] - initsize[1] ) / 2))
+
+        self.generate_graphene_cell_dims(finalsize[0], finalsize[1])
+        self.translate(-self.atompos[0][0] + (deltax_down/finalsize[0]) * float(self.cell_dims[0][0]),
+                       0, -self.atompos[0][2] + (deltaz_left/finalsize[1]) * float(self.cell_dims[1][2]))
         new_positions = self.generate_graphene_positions(finalsize[0],finalsize[1])
-        reference_array = np.around(np.array(self.atompos),2)
-        print(reference_array)
-        compteur = 0
-        for position in new_positions:
-            print(np.around(position,2))
-            if not(np.around(position,2) in reference_array): #marche pas pour l'instant
+        
+        for i,position in enumerate(new_positions):
+            if (position[0] < deltax_down / finalsize[0] * float(self.cell_dims[0][0]) or
+                position[0] >= (finalsize[0] - deltax_up) / finalsize[0] * float(self.cell_dims[0][0]) or
+                position[2] < deltaz_left / finalsize[1] * float(self.cell_dims[1][2]) or
+                position[2] >= (finalsize[1] - deltaz_right) / finalsize[1] * float(self.cell_dims[1][2])):
                 self.atompos.append(position)
+                self.elements.append('C')
+                self.spins.append(0)
             else:
-                compteur += 1
-        print(compteur)
+                pass
+        self.nat = len(self.atompos)
 
     def determine_graphene_size(self):
         if self.units in ['atomicd0','atomic','bohr','bohrd0']:
