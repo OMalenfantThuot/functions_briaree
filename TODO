@@ -1,3 +1,8 @@
 translation.py:
 - Cellules réduites
 - IGSpin
+
+enlarge.py:
+- Il y a encore des problèmes si la cellule a été déformée par la relaxation.
+    - le premier atome n'est plus nécessairement le bon (dans un autre coin, il faut donc le retrouver)
+- Conditions frontières périodiques (numpy.clip)
