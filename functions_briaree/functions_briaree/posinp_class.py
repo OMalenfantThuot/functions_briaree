@@ -96,7 +96,7 @@ class Posinp:
                 f.write('#keyword: ' + self.coord + '\n')
             for line, data in enumerate(self.atompos):
                 for dim in data:
-                    f.write('  {:19.17E}'.format(dim))
+                    f.write('  {:> 20.17E}'.format(dim))
                 f.write(' ' + self.elements[line])
                 if self.spins[line] != 0:
                     f.write(' {IGSpin: ' + str(self.spins[line]) + '}')
