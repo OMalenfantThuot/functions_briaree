@@ -32,9 +32,28 @@ class Posinp:
 
         elif self.filetype == 'xyz':
             raise Exception('xyz format not yet supported')
-
         else:
-            raise Exception('Format not recognized')
+            raise NameError('Format not recognized')
+
+        if self.geocode=='surface':
+            self.check_periodicity()
+
+    def check_periodicity(self):
+        if self.geocode == 'surface':
+            for atom in self.atompos:
+                if atom[0] >= self.cell_dims[0]:
+                    atom[0] = atom[0]%self.cell_dims[0]
+                elif atom[0] < 0:
+                    atom[0] = self.cell_dims[0] + atom[0]
+                if atom[2] >= self.cell_dims[5]:
+                    atom[2] = atom[2]%self.cell_dims[5]
+                elif atom[2] < 0:
+                    atom[2] = self.cell_dims[5] + atom[2]
+        elif self.geocode == 'periodic' or self.geocode == 'freeBC':
+            raise Exception('Geocode not yet implemented.')
+        else:
+            raise NameError('Geocode not recognized.')
+                
 
     def translate(self, del_x, del_y, del_z):
         """
@@ -47,6 +66,7 @@ class Posinp:
             atom[0] += del_x
             atom[1] += del_y
             atom[2] += del_z
+        self.check_periodicity()
 
     def add_atom(self,new_coord,new_element,new_spin=0):
         """
@@ -62,7 +82,7 @@ class Posinp:
 
     def remove_atom(self, rank):
         """
-        Enlève un atome au fichier position
+        Enleve un atome au fichier position
         :param rank: rang de l'atome dans le fichier
         """
         del self.atompos[rank]
@@ -88,15 +108,19 @@ class Posinp:
 
         with open(outfile,'w') as f:
             f.write('# BigDFT position file\n')
-            f.write(' ' + ' '.join(self.cell_dims[0]) + '\n')
-            f.write(' ' + ' '.join(self.cell_dims[1]) + '\n')
+            for i in range(3):
+                f.write('{:> 19.17E}'.format(self.cell_dims[i]))
+            f.write('\n')
+            for i in range(3,6):
+                f.write('{:> 19.17E}'.format(self.cell_dims[i]))
+            f.write('\n')
             f.write('#keyword: ' + self.units + '\n')
             f.write('#keyword: ' + self.geocode + '\n')
             if self.coord == 'reduced':
                 f.write('#keyword: ' + self.coord + '\n')
             for line, data in enumerate(self.atompos):
                 for dim in data:
-                    f.write('  {:> 20.17E}'.format(dim))
+                    f.write(' {:> 20.17E}'.format(dim))
                 f.write(' ' + self.elements[line])
                 if self.spins[line] != 0:
                     f.write(' {IGSpin: ' + str(self.spins[line]) + '}')
@@ -110,7 +134,7 @@ class Posinp:
         :param units: unités (optionel si déjà définis)
         """
         self.geocode = 'surface'
-        self.cell_dims = [[0] * 3] * 2
+        self.cell_dims = []
         self.elements = []
         self.spins = []
         if units:
@@ -128,15 +152,12 @@ class Posinp:
         if self.units in ['atomicd0','atomic','bohr','bohrd0']:
             basex = 4.6627
             basez = 8.0762
-            self.cell_dims[0] = ['{:19.17E}'.format(xsize*basex), '{:19.17E}'.format(0), '{:19.17E}'.format(40)]
-            self.cell_dims[1] = ['{:19.17E}'.format(0), '{:19.17E}'.format(0), '{:19.17E}'.format(zsize*basez)]
         elif self.units in ['angstroem', 'angstroemd0']:
             basex = 2.4673
             basez = 4.2737
-            self.cell_dims[0] = ['{:19.17E}'.format(xsize * basex), '{:19.17E}'.format(0), '{:19.17E}'.format(40)]
-            self.cell_dims[1] = ['{:19.17E}'.format(0), '{:19.17E}'.format(0), '{:19.17E}'.format(zsize * basez)]
         else:
             raise NameError('Units not recognized.')
+        self.cell_dims = [xsize*basex, 0, 40, 0, 0, zsize*basez]
 
     def generate_graphene_positions(self,xsize,zsize):
         """
@@ -160,8 +181,8 @@ class Posinp:
             for xi in range(xsize):
                 x_reduced_pos.append( (float(xi) + (1./2)) / xsize)
                 z_reduced_pos.append( (float(zi) + (5./6)) / zsize)
-        x_pos = np.array(x_reduced_pos) * float(self.cell_dims[0][0])
-        z_pos = np.array(z_reduced_pos) * float(self.cell_dims[1][2])
+        x_pos = np.array(x_reduced_pos) * self.cell_dims[0]
+        z_pos = np.array(z_reduced_pos) * self.cell_dims[5]
         atompos = []
         for at in range(self.nat):
             atompos.append([x_pos[at],20.,z_pos[at]])
@@ -185,16 +206,17 @@ class Posinp:
         deltaz_left = int( np.ceil ( (finalsize[1] - initsize[1] ) / 2))
         deltaz_right= int( np.floor( (finalsize[1] - initsize[1] ) / 2))
 
+        self.translate(0.3,0,0.3)
         self.generate_graphene_cell_dims(finalsize[0], finalsize[1])
-        self.translate(-self.atompos[0][0] + (deltax_down/finalsize[0]) * float(self.cell_dims[0][0]),
-                       0, -self.atompos[0][2] + (deltaz_left/finalsize[1]) * float(self.cell_dims[1][2]))
+        self.translate(-self.atompos[0][0] + (deltax_down/finalsize[0]) * self.cell_dims[0],
+                       0, -self.atompos[0][2] + (deltaz_left/finalsize[1]) * self.cell_dims[5])
         new_positions = self.generate_graphene_positions(finalsize[0],finalsize[1])
         
         for i,position in enumerate(new_positions):
-            if (position[0] < deltax_down / finalsize[0] * float(self.cell_dims[0][0]) or
-                position[0] >= (finalsize[0] - deltax_up) / finalsize[0] * float(self.cell_dims[0][0]) or
-                position[2] < deltaz_left / finalsize[1] * float(self.cell_dims[1][2]) or
-                position[2] >= (finalsize[1] - deltaz_right) / finalsize[1] * float(self.cell_dims[1][2])):
+            if (position[0] < deltax_down / finalsize[0] * self.cell_dims[0] or
+                position[0] >= (finalsize[0] - deltax_up) / finalsize[0] * self.cell_dims[0] or
+                position[2] < deltaz_left / finalsize[1] * self.cell_dims[5] or
+                position[2] >= (finalsize[1] - deltaz_right) / finalsize[1] * self.cell_dims[5]):
                 self.atompos.append(position)
                 self.elements.append('C')
                 self.spins.append(0)
@@ -204,11 +226,11 @@ class Posinp:
 
     def determine_graphene_size(self):
         if self.units in ['atomicd0','atomic','bohr','bohrd0']:
-            x_size = int(round(float(self.cell_dims[0][0])/4.6627))
-            z_size = int(round(float(self.cell_dims[1][2])/8.0762))
+            x_size = int(round(self.cell_dims[0]/4.6627))
+            z_size = int(round(self.cell_dims[5]/8.0762))
         elif self.units in ['angstroem','angstroemd0']:
-            x_size = int(round(float(self.cell_dims[0][0])/2.4673))
-            z_size = int(round(float(self.cell_dims[1][2])/8.0762))
+            x_size = int(round(self.cell_dims[0]/2.4673))
+            z_size = int(round(self.cell_dims[5]/8.0762))
         else:
             raise NameError('Units not recognized.')
         return [x_size,z_size]

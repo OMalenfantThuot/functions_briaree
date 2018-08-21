@@ -8,7 +8,7 @@ Script pour agrandir les fichiers positions .ascii du graphène
 S'appelle comme un éxécutable
 
 """
-infile = str(input('Entrer le nom du fichier à agrandir:\n'))
+infile = str(input('Entrer le nom du fichier a agrandir:\n'))
 
 Pos = fbr.Posinp()
 Pos.def_from_file(infile)

@@ -33,7 +33,8 @@ def read_ascii(filename):
                     else:
                         raise Exception('A line is not recognized:\n'+line)
                 elif len(l) == 3:
-                    cell_dims.append(l)
+                    for dim in l:
+                        cell_dims.append(float(dim))
                 else:
                     raise Exception('A line is not recognized:\n'+line)
 
