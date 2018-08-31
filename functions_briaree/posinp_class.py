@@ -183,10 +183,14 @@ class Posinp:
                 z_reduced_pos.append( (float(zi) + (5./6)) / zsize)
         x_pos = np.array(x_reduced_pos) * self.cell_dims[0]
         z_pos = np.array(z_reduced_pos) * self.cell_dims[5]
-        atompos = []
-        for at in range(self.nat):
-            atompos.append([x_pos[at],20.,z_pos[at]])
-        return atompos
+        new_atompos = []
+        if self.atompos:
+            for at in range(self.nat):
+                new_atompos.append([x_pos[at],self.atompos[0][1],z_pos[at]])
+        else:
+            for at in range(self.nat):
+                new_atompos.append([x_pos[at],20.,z_pos[at]])
+        return new_atompos
 
     def enlarge_graphene_cell(self, finalsize):
         """
