@@ -1,57 +1,6 @@
-import numpy as np
 import math
 import matplotlib.pyplot as plt
-
-
-def read_ascii(filename):
-    """
-    Fonction pour lire les fichiers positions .ascii de BigDFT
-    :param filename: nom du fichier à lire
-    :return: positions atomiques, éléments, spin, unités
-    :return: geocode, type de coordonnées, dimensions de la cellule
-    """
-
-    data_pos = []
-    data_element = []
-    data_spin = []
-    cell_dims = []
-    coord = 'absolute'
-
-    with open(filename,'r') as f:
-
-        for line in f:
-            l = line.split()
-
-            if (not line[0] == '#'):
-                if (len(l) >= 4):
-                    data_pos.append([float(l[0]),float(l[1]),float(l[2])])
-                    data_element.append(l[3])
-                    if len(l) == 4:
-                        data_spin.append(0)
-                    elif len(l) == 6:
-                        data_spin.append(int(l[5][0]))
-                    else:
-                        raise Exception('A line is not recognized:\n'+line)
-                elif len(l) == 3:
-                    for dim in l:
-                        cell_dims.append(float(dim))
-                else:
-                    raise Exception('A line is not recognized:\n'+line)
-
-            elif l[0] == '#keyword:':
-                if l[1] in ['atomicd0','atomic','bohr','bohrd0','angstroem','angstroemd0']:
-                    units = l[1]
-                elif l[1] in ['surface','periodic','freeBC']:
-                    geocode = l[1]
-                elif l[1] == 'reduced':
-                    coord = 'reduced'
-                else:
-                    raise Exception('Keyword not recognized')
-
-    return data_pos,data_element,data_spin,units,geocode,coord,cell_dims
-            
-    
-    
+import numpy as np
 
 def first_BZ_rec(x,y,bx,by):
 #Cette fonction vérifie si un point est à l'intérieur de
@@ -62,7 +11,7 @@ def first_BZ_rec(x,y,bx,by):
         return True
     else:
         return False
-        
+
 
 def first_BZ_hex(x,y,b):
 #Cette fonction vérifie si un point est à l'intérieur de
@@ -105,3 +54,10 @@ def plot_rec(x,y,color='g',label=''):
     plt.plot(rec1,rec2,color=color,label=label)
     plt.axis('equal')
     return
+
+def sin_interpolate(ener1, ener2, time):
+    a = (ener2  - ener1)/2
+    h = (time[-1] + time[0])/2
+    b = np.pi / (time[-1] - time[0])
+    c = (ener1 + ener2)/2
+    return a * np.sin(b * (time - h)) + c
