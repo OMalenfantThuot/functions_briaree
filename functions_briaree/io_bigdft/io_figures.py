@@ -40,18 +40,18 @@ def first_BZ_hex(x,y,b):
     if l > lim:
         return False, False
 
-def plot_hex(b,color='k',label=''):
+def plot_hex(b,**kwargs):
     r = b/math.sqrt(3)
     hex1 = [-r/2,-r,-r/2, r/2,r,r/2,-r/2]
     hex2 = [ b/2, 0,-b/2,-b/2,0,b/2, b/2]
-    plt.plot(hex1,hex2,color=color,label=label)
+    plt.plot(hex1,hex2,**kwargs)
     plt.axis('equal')
     return
 
-def plot_rec(x,y,color='g',label=''):
+def plot_rec(x,y,**kwargs):
     rec1 = [x/2, x/2, -x/2, -x/2, x/2]
     rec2 = [y/2, -y/2, -y/2, y/2, y/2]
-    plt.plot(rec1,rec2,color=color,label=label)
+    plt.plot(rec1,rec2,**kwargs)
     plt.axis('equal')
     return
 
