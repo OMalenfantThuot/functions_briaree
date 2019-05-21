@@ -13,8 +13,8 @@ setuptools.setup(
     #    long_description_content_type="text/markdown",
     url="https://github.com/OMalenfantThuot/exec_briaree",
     packages=setuptools.find_packages(),
-    classifiers=(
+    classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: UNIX based",
-    ),
+    ],
 )
